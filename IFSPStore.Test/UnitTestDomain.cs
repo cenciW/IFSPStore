@@ -9,7 +9,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace IFSPStore.Test
 {
     [TestClass]
-    public class UnitTest1
+    public class UnitTestDomain
     {
         [TestMethod]
         public void TestCidade()
