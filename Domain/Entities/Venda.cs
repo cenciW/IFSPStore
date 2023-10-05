@@ -35,6 +35,7 @@ ENGINE = InnoDB;
             vendaItems = new List<VendaItem>();
         }
 
+
         public Venda(DateTime data, double valt, Usuario usuario, Cliente cli, List<VendaItem> itens)
         {
             vendaItems = new List<VendaItem>();
@@ -89,6 +90,10 @@ ENGINE = InnoDB;
                 Produto = p;
                 //Venda = v;
                 
+            }
+            public VendaItem()
+            {
+
             }
         }
     }

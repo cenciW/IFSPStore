@@ -25,14 +25,19 @@ namespace IFSPStore.Domain.Entities
 ENGINE = InnoDB;*/
     public class Produto : BaseEntity<int>
     {
+        public Produto()
+        {
+
+        }
+
         public string? Nome { get; set; }
         public double? Preco{ get; set; }
         public int? Quantidade{ get; set; }
         public DateTime? DataCompra{ get; set; }
-        public int? UnidadeVenda { get; set; }
+        public string? UnidadeVenda { get; set; }
         public Grupo? Grupo { get; set;}
 
-        public Produto(string nome, double preco, int qtd, DateTime dtComp, int unidVend, Grupo grupo)
+        public Produto(string nome, double preco, int qtd, DateTime dtComp, string unidVend, Grupo grupo)
         {
             Nome = nome;
             Preco = preco;

@@ -2,6 +2,7 @@ using IFSPStore.Domain.Entities;
 using IFSPSTore.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static IFSPStore.Domain.Entities.Venda;
@@ -97,13 +98,118 @@ namespace IFSPStore.Test
             }
         }
         #endregion
-    }
 
+        #region Test Produto
+         [TestMethod]
+         public void TestProduto()
+         {
+             using (var context = new MyDbContext())
+             {
+                Grupo g = context.Grupo.First(g=>g.id == 1);
+                
+
+                 var produto = new Produto("Feijao", 15, 2, DateTime.UtcNow.ToLocalTime(), "BRI", g);
+
+                 context.Produto.Add(produto);
+                 context.SaveChanges();
+             };
+         }
+
+         [TestMethod]
+         public void TesteSelectProduto()
+         {
+             using (var context = new MyDbContext())
+             {
+                 foreach (var produto in context.Produto)
+                 {
+                     {
+                        Console.WriteLine(JsonSerializer.Serialize(produto));
+                     }
+                 }
+             }
+         }
+        #endregion
+
+        #region Test Cliente
+        [TestMethod]
+        public void TestCliente()
+        {
+            using (var context = new MyDbContext())
+            {
+                Cidade c = context.Cidade.First(c => c.id == 1);
+
+
+                var cliente = new Cliente("Cliente", "endereco", "rg do junin", "quebrada", c);
+
+                context.Cliente.Add(cliente);
+                context.SaveChanges();
+            };
+        }
+
+        [TestMethod]
+        public void TestSelectCliente()
+        {
+            using (var context = new MyDbContext())
+            {
+                foreach (var cliente in context.Cliente)
+                {
+                    {
+                        Console.WriteLine(JsonSerializer.Serialize(cliente));
+                    }
+                }
+            }
+        }
+        #endregion
+
+        #region Test Venda
+        [TestMethod]
+        public void TestVenda()
+        {
+            using (var context = new MyDbContext())
+            {
+                Usuario u = context.Usuario.First(c => c.id == 1);
+                Cliente c = context.Cliente.First(c => c.id == 1);
+                Produto p = context.Produto.First(c => c.id == 1);
+
+                List<VendaItem> vendaItens = new List<VendaItem>();
+                
+                var vendaItem = new VendaItem(1, 10, 100, p);
+                vendaItens.Add(vendaItem);
+                var venda = new Venda(DateTime.UtcNow.ToLocalTime(), 100, u, c, vendaItens);
+
+                context.VendaItem.Add(vendaItem);
+                context.Venda.Add(venda);
+                context.SaveChanges();
+            };
+        }
+
+        [TestMethod]
+        public void TestSelectVenda()
+        {
+            using (var context = new MyDbContext())
+            {
+                foreach (var vendas in context.Venda)
+                {
+                    {
+                        Console.WriteLine(JsonSerializer.Serialize(vendas));
+                    }
+                }
+            }
+        }
+        #endregion
+
+
+
+
+    }
     public class MyDbContext : DbContext{
         public DbSet<Usuario> Usuario { get; set; }
         public DbSet<Cidade> Cidade{ get; set; }
         public DbSet<Grupo> Grupo { get; set; }
         public DbSet<Produto> Produto { get; set; }
+        public DbSet<Cliente> Cliente { get; set; }
+        public DbSet<VendaItem> VendaItem { get; set; }
+        public DbSet<Venda> Venda{ get; set; }
         public MyDbContext()
         {
             //Força a criação do banco de dados;
@@ -120,8 +226,32 @@ namespace IFSPStore.Test
             var strCon = $"Server={server};Port={port};" + $"Database={database}; Uid={username};Pwd={password}";
 
             if (!optionsBuilder.IsConfigured) { 
-                optionsBuilder.UseMySql(strCon, ServerVersion.AutoDetect(strCon));  
+                optionsBuilder.UseMySql(strCon, ServerVersion.AutoDetect(strCon));
             }
+
         }
+
+        /*protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Produto>(entity =>
+            {
+                entity.ToTable("Produto"); // Nome da tabela no banco de dados
+                entity.HasKey(p => p.id); // Chave primária
+
+                // Definindo as propriedades da tabela Produto
+                entity.Property(e => e.Nome).HasMaxLength(100);
+                entity.Property(e => e.Preco).HasColumnType("decimal(10,2)");
+                entity.Property(e => e.Quantidade);
+                entity.Property(e => e.DataCompra);
+                entity.Property(e => e.UnidadeVenda).HasMaxLength(10);
+
+                // Relacionamento com a tabela Grupo (chave estrangeira)
+                entity.HasOne(e => e.Grupo)
+                    .WithMany() // Nenhum método WithMany() aqui indica um relacionamento de um para muitos
+                    .HasForeignKey(e => e.Grupoid)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+        }*/
+
     }
 }
